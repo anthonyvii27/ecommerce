@@ -1,7 +1,7 @@
-import * as dotenv from 'dotenv';
+import * as dotenv from "dotenv";
 
 dotenv.config();
 
 export abstract class ApplicationEnvironment {
-    public static Port: string = process.env['PORT'] || '';
+    public static Port: string = process.env.PORT || "";
 }

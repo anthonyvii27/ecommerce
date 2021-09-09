@@ -4,5 +4,113 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
+}
+
+model customer {
+  cpf                 Int                  @id @default(autoincrement())
+  name                String               @db.VarChar(255)
+  gender              String               @db.Char(1)
+  birthdate           DateTime             @db.Date
+  phone               String               @db.VarChar(25)
+  email               String               @db.VarChar(255)
+  status              String               @db.VarChar(30)
+  wpp_notifications   Boolean
+  email_notifications Boolean
+  password            String               @db.VarChar(255)
+  created_at          DateTime             @db.Date
+  updated_at          DateTime?            @db.Date
+  customer_addresses  customer_addresses[]
+  customer_card       customer_card[]
+  customer_favorites  customer_favorites[] @ignore
+  product_ratings     product_ratings[]
+}
+
+model customer_addresses {
+  customer_cpf Int      @default(autoincrement())
+  cep          String   @db.Char(8)
+  street       String   @db.VarChar(255)
+  district     String   @db.VarChar(255)
+  city         String   @db.VarChar(255)
+  state        String   @db.VarChar(255)
+  number       Int
+  surname      String   @db.VarChar(255)
+  customer     customer @relation(fields: [customer_cpf], references: [cpf], onDelete: NoAction, onUpdate: NoAction, map: "fk_customer_cpf")
+
+  @@id([customer_cpf, cep, number])
+}
+
+model customer_card {
+  customer_cpf       Int       @default(autoincrement())
+  card_number        String    @db.Char(16)
+  card_name          String    @db.VarChar(255)
+  card_expiring_date String?   @db.Char(5)
+  created_at         DateTime  @db.Date
+  updated_at         DateTime? @db.Date
+  customer           customer  @relation(fields: [customer_cpf], references: [cpf], onDelete: NoAction, onUpdate: NoAction, map: "fk_customer_cpf")
+
+  @@id([customer_cpf, card_number])
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model customer_favorites {
+  customer_id Int      @default(autoincrement())
+  product_id  Int      @default(autoincrement())
+  created_at  DateTime @db.Date
+  customer    customer @relation(fields: [customer_id], references: [cpf], onDelete: NoAction, onUpdate: NoAction, map: "fk_customer_id")
+  product     product  @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_id")
+
+  @@ignore
+}
+
+model product {
+  id                  Int                  @id @default(autoincrement())
+  product_name        String               @db.VarChar(255)
+  product_gender      String               @db.Char(1)
+  product_description String               @db.VarChar(255)
+  original_price      Decimal              @db.Money
+  discount_price      Decimal              @db.Money
+  product_datasheet   Json                 @db.Json
+  created_at          DateTime             @db.Date
+  updated_at          DateTime?            @db.Date
+  category_id         Int                  @default(autoincrement())
+  product_category    product_category     @relation(fields: [category_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_category_id")
+  customer_favorites  customer_favorites[] @ignore
+  product_images      product_images[]
+  product_inventory   product_inventory[]
+  product_ratings     product_ratings[]
+}
+
+model product_category {
+  id                  Int       @id @default(autoincrement())
+  product_name        String    @db.VarChar(255)
+  product_description String?   @db.VarChar(255)
+  product             product[]
+}
+
+model product_images {
+  id         Int     @id @default(autoincrement())
+  image_url  String  @db.VarChar(500)
+  product_id Int     @default(autoincrement())
+  product    product @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_id")
+}
+
+model product_inventory {
+  id           Int       @id @default(autoincrement())
+  product_size String    @db.VarChar(5)
+  created_at   DateTime  @db.Date
+  updated_at   DateTime? @db.Date
+  product_id   Int       @default(autoincrement())
+  product      product   @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_id")
+}
+
+model product_ratings {
+  customer_id Int      @default(autoincrement())
+  product_id  Int      @default(autoincrement())
+  rating      Int
+  comment     String?  @db.VarChar(255)
+  customer    customer @relation(fields: [customer_id], references: [cpf], onDelete: NoAction, onUpdate: NoAction, map: "fk_customer_id")
+  product     product  @relation(fields: [product_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_product_id")
+
+  @@id([customer_id, product_id])
 }

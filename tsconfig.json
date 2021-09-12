@@ -16,9 +16,8 @@
         "@repository/*": ["./src/repository/*"],
         "@database/*": ["./src/database/*"],
         "@settings/*": ["./src/settings/*"],
-        "@models/*": ["./src/models/*"],
         "@utils/*": ["./src/utils/*"],
-        "@infra/*": ["./src/infra/*"],
+        "@infra/*": ["./src/infra/*"]
         },                                      
         "outDir": "./dist",                                   
         "removeComments": true,                          

@@ -1,12 +1,18 @@
 import HttpException from "@middlewares/errorHandlerMiddleware";
 import { PrismaClient } from "@prisma/client";
+import { CustomerRepository } from "@repository/customerRepository";
 import { NextFunction, Request, Response } from "express";
 
 export class CustomerController {
     private readonly prismaClient: PrismaClient;
+    private readonly customerRepository: CustomerRepository;
 
-    constructor(prismaClient: PrismaClient) {
+    constructor(
+        prismaClient: PrismaClient,
+        customerRepository: CustomerRepository
+    ) {
         this.prismaClient = prismaClient;
+        this.customerRepository = customerRepository;
     }
 
     async register(req: Request, res: Response, next: NextFunction) {
@@ -46,19 +52,16 @@ export class CustomerController {
                 throw new HttpException(409, "User already exists");
             }
 
-            const customer = await this.prismaClient.customer.create({
-                data: {
-                    cpf,
-                    customer_name: name,
-                    customer_password: password,
-                    birthdate: new Date(birthdate),
-                    gender,
-                    phone_number: phoneNumber,
-                    customer_email: email,
-                    wpp_notifications: wppNotifications,
-                    email_notification: emailNotifications,
-                    created_at: new Date(),
-                },
+            const customer = await this.customerRepository.registerNewCustomer({
+                cpf,
+                name,
+                password,
+                birthdate,
+                gender,
+                phoneNumber,
+                email,
+                wppNotifications,
+                emailNotifications,
             });
 
             res.status(201).json(customer);

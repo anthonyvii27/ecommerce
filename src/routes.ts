@@ -8,11 +8,7 @@ const prismaClient = new PrismaClient();
 
 const customerRepository = new CustomerRepository(prismaClient);
 
-const customerController = new CustomerController(
-    prismaClient,
-    customerRepository
-);
-
+const customerController = new CustomerController(customerRepository);
 const authController = new AuthController(customerRepository);
 
 const router = Router();

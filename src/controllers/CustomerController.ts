@@ -1,17 +1,11 @@
 import HttpException from "@middlewares/errorHandlerMiddleware";
-import { PrismaClient } from "@prisma/client";
 import { CustomerRepository } from "@repository/customerRepository";
 import { NextFunction, Request, Response } from "express";
 
 export class CustomerController {
-    private readonly prismaClient: PrismaClient;
     private readonly customerRepository: CustomerRepository;
 
-    constructor(
-        prismaClient: PrismaClient,
-        customerRepository: CustomerRepository
-    ) {
-        this.prismaClient = prismaClient;
+    constructor(customerRepository: CustomerRepository) {
         this.customerRepository = customerRepository;
     }
 
@@ -44,9 +38,7 @@ export class CustomerController {
             }
 
             const customerAlreadyExists =
-                await this.prismaClient.customer.findFirst({
-                    where: { cpf },
-                });
+                await this.customerRepository.getCustomerByCPF(cpf);
 
             if (customerAlreadyExists) {
                 throw new HttpException(409, "User already exists");

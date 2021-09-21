@@ -18,7 +18,7 @@ export class AuthController {
             throw new HttpException(400, "Missing required params");
         }
 
-        const user = await this.customerRepository.getCustomer({
+        const user = await this.customerRepository.getCustomerToAuthenticate({
             email,
             password,
         });

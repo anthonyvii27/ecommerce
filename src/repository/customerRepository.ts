@@ -27,7 +27,13 @@ export class CustomerRepository {
         return entity;
     }
 
-    async getCustomer(authData: IAuthenticateCustomer) {
+    async getCustomerByCPF(cpf: string) {
+        return this.prismaClient.customer.findFirst({
+            where: { cpf },
+        });
+    }
+
+    async getCustomerToAuthenticate(authData: IAuthenticateCustomer) {
         return this.prismaClient.customer.findFirst({
             where: {
                 customer_email: authData.email,

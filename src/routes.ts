@@ -1,3 +1,4 @@
+import { AuthController } from "@controllers/AuthController";
 import { CustomerController } from "@controllers/CustomerController";
 import { PrismaClient } from "@prisma/client";
 import { CustomerRepository } from "@repository/customerRepository";
@@ -12,11 +13,18 @@ const customerController = new CustomerController(
     customerRepository
 );
 
+const authController = new AuthController(customerRepository);
+
 const router = Router();
 
 router.post(
     "/auth/register",
     customerController.register.bind(customerController)
+);
+
+router.post(
+    "/auth/authenticate",
+    authController.authenticate.bind(customerController)
 );
 
 export { router };

@@ -1,4 +1,4 @@
-import { ICreateCustomer } from "@interfaces/ICustomer";
+import { ICreateCustomer, IAuthenticateCustomer } from "@interfaces/ICustomer";
 import { PrismaClient } from "@prisma/client";
 
 export class CustomerRepository {
@@ -25,5 +25,14 @@ export class CustomerRepository {
         });
 
         return entity;
+    }
+
+    async getCustomer(authData: IAuthenticateCustomer) {
+        return this.prismaClient.customer.findFirst({
+            where: {
+                customer_email: authData.email,
+                customer_password: authData.password,
+            },
+        });
     }
 }

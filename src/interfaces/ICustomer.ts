@@ -16,3 +16,8 @@ export interface ICreateCustomer {
     wppNotifications: boolean;
     emailNotifications: boolean;
 }
+
+export interface IAuthenticateCustomer {
+    email: string;
+    password: string;
+}

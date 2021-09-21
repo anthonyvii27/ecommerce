@@ -1,6 +1,7 @@
 import HttpException from "@middlewares/errorHandlerMiddleware";
 import { CustomerRepository } from "@repository/customerRepository";
 import { ApplicationJWTSecret } from "@settings/index";
+import bcrypt from "bcryptjs";
 import { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
 
@@ -20,10 +21,18 @@ export class AuthController {
 
         const user = await this.customerRepository.getCustomerToAuthenticate({
             email,
-            password,
         });
 
         if (!user) {
+            throw new HttpException(401, "User not found");
+        }
+
+        const isValidPassword = await bcrypt.compare(
+            password,
+            user.customer_password
+        );
+
+        if (!isValidPassword) {
             throw new HttpException(401, "User not found");
         }
 

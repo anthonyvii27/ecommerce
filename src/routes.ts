@@ -13,10 +13,7 @@ const authController = new AuthController(customerRepository);
 
 const router = Router();
 
-router.post(
-    "/auth/register",
-    customerController.register.bind(customerController)
-);
+router.post("/register", customerController.register.bind(customerController));
 
 router.post(
     "/auth/authenticate",

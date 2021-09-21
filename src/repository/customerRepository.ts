@@ -37,7 +37,6 @@ export class CustomerRepository {
         return this.prismaClient.customer.findFirst({
             where: {
                 customer_email: authData.email,
-                customer_password: authData.password,
             },
         });
     }

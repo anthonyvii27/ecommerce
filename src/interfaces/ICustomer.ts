@@ -19,5 +19,4 @@ export interface ICreateCustomer {
 
 export interface IAuthenticateCustomer {
     email: string;
-    password: string;
 }

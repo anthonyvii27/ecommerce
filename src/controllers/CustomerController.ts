@@ -1,5 +1,6 @@
 import HttpException from "@middlewares/errorHandlerMiddleware";
 import { CustomerRepository } from "@repository/customerRepository";
+import bcrypt from "bcryptjs";
 import { NextFunction, Request, Response } from "express";
 
 export class CustomerController {
@@ -7,6 +8,10 @@ export class CustomerController {
 
     constructor(customerRepository: CustomerRepository) {
         this.customerRepository = customerRepository;
+    }
+
+    hashPassword(password: string) {
+        return bcrypt.hashSync(password, 8);
     }
 
     async register(req: Request, res: Response, next: NextFunction) {
@@ -44,10 +49,12 @@ export class CustomerController {
                 throw new HttpException(409, "User already exists");
             }
 
+            const encryptedPassword = this.hashPassword(password);
+
             const customer = await this.customerRepository.registerNewCustomer({
                 cpf,
                 name,
-                password,
+                password: encryptedPassword,
                 birthdate,
                 gender,
                 phoneNumber,
